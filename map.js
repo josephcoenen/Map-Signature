@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(loc => {
             let color = "#CCFF00"; // Light Green for Sammelstationen
             if(loc.mainCat === 'heute') color = "#006400"; // Dark Green for Mobile Stände
-            if(loc.mainCat === 'events') color = "#006400"; // Moved to Dark Green as per request
+            if(loc.mainCat === 'events') color = "#006400"; // Dark Green for Events
 
             let marker;
             if (loc.mainCat === 'dauerhaft' || loc.mainCat === 'events') {
@@ -534,19 +534,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const isSammelstation = loc.mainCat === 'dauerhaft';
+            const isEvent = loc.mainCat === 'events';
+            
             const popupHeader = isSammelstation ? 'Unterschriftenstelle + Einwurfbox' : loc.name;
             const postBoxFlag = isSammelstation ? '📬 Postbox + Unterschriftenzettel vorhanden' : '';
             const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
-            const secondaryInfo = isSammelstation ? '<p style="margin-top:5px; color:#003333; font-style:italic;">Im Eingangsbereich neben den Kassen</p>' : `<p style="margin-top:5px; color:#003333; font-style:italic;">"${loc.info}"</p>`;
+            
+            let secondaryInfo = '';
+            if (isSammelstation) {
+                secondaryInfo = '<p style="margin-top:5px; color:#003333; font-style:italic;">Im Eingangsbereich neben den Kassen</p>';
+            } else if (!isEvent) {
+                secondaryInfo = `<p style="margin-top:5px; color:#003333; font-style:italic;">"${loc.info}"</p>`;
+            }
+
+            // For events, we show the date and time cleanly
+            const todayOptions = { day: 'numeric', month: 'numeric', year: 'numeric' };
+            const todayLabel = new Date().toLocaleDateString('de-DE', todayOptions);
+            const eventDateStr = isEvent ? `<p style="margin:0; font-weight:700;">${todayLabel}</p>` : '';
+            const eventTimeStr = isEvent ? `<p style="margin:0;">${loc.hours}</p>` : `<p>${loc.hours}</p>`;
 
             marker.bindPopup(`
                 <div class="popup-content">
-                    <h3>${isSammelstation ? loc.name : popupHeader}</h3>
+                    <h3>${(isSammelstation) ? loc.name : popupHeader}</h3>
                     <div class="popup-info">
                         <p><strong>${loc.address}</strong></p>
-                        <p>${loc.hours}</p>
+                        ${isEvent ? eventDateStr + eventTimeStr : eventTimeStr}
                         ${secondaryInfo}
-                        <p style="margin-top:5px; font-weight:700;">${postBoxFlag}</p>
+                        ${postBoxFlag ? `<p style="margin-top:5px; font-weight:700;">${postBoxFlag}</p>` : ''}
                     </div>
                     <a href="${gmapsUrl}" class="btn-route" target="_blank">Routenplanung (Google Maps)</a>
                 </div>
@@ -706,18 +720,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (parts.length < 8) continue;
                 
                 const date = parts[0].replace(/"/g, '');
-                const name = parts[2].replace(/"/g, '');
-                const street = parts[3].replace(/"/g, '');
-                const zip = parts[4].replace(/"/g, '');
-                const city = parts[5].replace(/"/g, '').replace('Mnchen', 'München');
-                const start = parts[6].replace(/"/g, '');
-                const end = parts[7].replace(/"/g, '');
+                const name = parts[2].replace(/"/g, ''); // Spalte C
+                const street = parts[3].replace(/"/g, ''); // Spalte D
+                const zip = parts[4].replace(/"/g, '');    // Spalte E
+                const city = parts[5].replace(/"/g, '').replace('Mnchen', 'München'); // Spalte F
+                const start = parts[6].replace(/"/g, ''); // Spalte G
+                const end = parts[7].replace(/"/g, '');   // Spalte H
 
                 const fullAddress = `${street}, ${zip} ${city}`;
 
                 if (date === todayStr) {
                     // Avoid duplicating the hardcoded test event if it exists in CSV
-                    if (locations.some(loc => loc.name.includes(name) && loc.mainCat === 'events')) continue;
+                    if (locations.some(loc => loc.name === name && loc.mainCat === 'events')) continue;
 
                     // Geocode this event
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`);
@@ -730,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             lng: parseFloat(geoData[0].lon),
                             mainCat: "events",
                             hours: `${start} - ${end}`,
-                            info: "Event heute"
+                            info: "event"
                         });
                     }
                 }
