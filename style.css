@@ -306,24 +306,30 @@ details[open].desc-box summary::after {
 }
 
 .status-badge {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     font-weight: 800;
-    padding: 3px 8px;
+    padding: 4px 12px;
     border-radius: 980px;
     color: #FFFFFF;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .status-open {
-    background-color: #28a745; /* Clean Green */
+    background-color: #2DCA73; /* Vibrant Green */
 }
 
 .status-closed {
-    background-color: #dc3545; /* Clean Red */
+    background-color: #FF4D4D; /* Vibrant Red */
 }
 
 .status-warning {
-    background-color: #fd7e14; /* Orange */
+    background-color: #FF9F1C; /* Vibrant Orange */
+}
+
+.status-upcoming {
+    background-color: #A0A0A0; /* Subtle Grey for later today */
 }
 
 footer {

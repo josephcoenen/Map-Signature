@@ -522,6 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (startMin - currentTimeInMinutes <= 60) {
                         return '<span class="status-badge status-warning">Bald vor Ort</span>';
                     }
+                    return '<span class="status-badge status-upcoming">Heute später</span>';
                 } else if (currentTimeInMinutes >= startMin && currentTimeInMinutes < endMin) {
                     if (endMin - currentTimeInMinutes <= 60) {
                         return '<span class="status-badge status-warning">Bald nicht mehr vor Ort</span>';
@@ -595,21 +596,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 secondaryInfo = `<p style="margin-top:5px; color:#003333; font-style:italic;">"${loc.info}"</p>`;
             }
 
-            // For events, we show the date and time cleanly
+            // For events, we show the date and time on one line as requested
             const todayOptions = { day: 'numeric', month: 'numeric', year: 'numeric' };
             const todayLabel = new Date().toLocaleDateString('de-DE', todayOptions);
-            const eventDateStr = isEvent ? `<p style="margin:0; font-weight:700;">${todayLabel}</p>` : '';
-            const eventTimeStr = isEvent ? `<p style="margin:0;">${loc.hours} Uhr</p>` : `<p>${loc.hours}</p>`;
+            const eventDateTimeStr = isEvent ? `<p style="margin:0;"><strong>${todayLabel}</strong> | ${loc.hours} Uhr</p>` : `<p>${loc.hours}</p>`;
 
             marker.bindPopup(`
                 <div class="popup-content">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                         <h3 style="margin:0;">${(isSammelstation) ? loc.name : popupHeader}</h3>
                         ${statusBadge}
                     </div>
                     <div class="popup-info">
                         <p><strong>${loc.address}</strong></p>
-                        ${isEvent ? eventDateStr + eventTimeStr : eventTimeStr}
+                        ${eventDateTimeStr}
                         ${secondaryInfo}
                         ${postBoxFlag ? `<p style="margin-top:5px; font-weight:700;">${postBoxFlag}</p>` : ''}
                     </div>
