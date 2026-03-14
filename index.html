@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unterschrifts-Orte | BaumEntscheid München</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="map-container">
+        <!-- Control Panel (Sidebar/Overlay) -->
+        <div id="control-panel">
+            <header>
+                <img src="../Website/assets/logo.png" alt="BaumEntscheid München" class="map-logo">
+                <h1>Finde den nächsten Unterschriftenstand oder eine Einwurfbox</h1>
+                <div class="desc-box">
+                    <p><strong>So einfach geht’s:</strong><br>
+                    Egal ob beim Einkaufen, im Café oder direkt im Viertel: Such dir auf der Karte einen Ort aus, um den BaumEntscheid mit deiner Unterschrift zu unterstützen.</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>Sammelstationen:</strong> Unterschreiben oder ausgefüllte Listen einwerfen.</li>
+                        <li><strong>Mobile Stände:</strong> Wir kommen mit unseren Teams direkt in dein Viertel.</li>
+                        <li><strong>Events:</strong> Triff uns auf Veranstaltungen in der ganzen Stadt.</li>
+                    </ul>
+                </div>
+            </header>
+
+            <div class="search-box">
+                <div id="current-date-pill" class="date-pill"></div>
+                <input type="text" id="address-search" placeholder="Deine Adresse (z.B. Sendlinger Tor)...">
+                <button id="find-nearest">Nächsten Ort finden</button>
+            </div>
+            
+            <div class="filters">
+                <h2>Was suchst du?</h2>
+                <div class="main-categories">
+                    <button class="cat-btn active" data-main="all">Alle</button>
+                    <button class="cat-btn" data-main="dauerhaft">Sammelstationen</button>
+                    <button class="cat-btn" data-main="heute">Mobile Stände</button>
+                    <button class="cat-btn" data-main="events">Events</button>
+                </div>
+
+                <!-- Sub-Categories (initially hidden or dynamic) -->
+                <div id="sub-filters" class="sub-filters hidden">
+                    <span class="sub-label">Filter verfeinern:</span>
+                    <div class="sub-chips">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="location-list">
+                <!-- Javascript will populate this -->
+            </div>
+            
+            <footer>
+                <a href="../Website/index.html" class="back-link">← Zurück zur Website</a>
+            </footer>
+        </div>
+
+        <!-- The Map -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Custom Map Logic -->
+    <script src="map.js"></script>
+</body>
+</html>
