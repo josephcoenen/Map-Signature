@@ -291,6 +291,7 @@ details[open].desc-box summary::after {
 
 .tag-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     align-items: center;
 }
@@ -302,6 +303,27 @@ details[open].desc-box summary::after {
     padding: 3px 8px;
     border-radius: 4px;
     background: #EEEEEE;
+}
+
+.status-badge {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 980px;
+    color: #FFFFFF;
+}
+
+.status-open {
+    background-color: #28a745; /* Clean Green */
+}
+
+.status-closed {
+    background-color: #dc3545; /* Clean Red */
+}
+
+.status-warning {
+    background-color: #fd7e14; /* Orange */
 }
 
 footer {

@@ -478,6 +478,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const subChipContainer = subFilterRow.querySelector('.sub-chips');
 
 
+    function getStatusBadge(loc) {
+        const now = new Date();
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+        const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+        const day = now.getDay(); // 0 (Sun) to 6 (Sat)
+        
+        if (loc.mainCat === 'dauerhaft') {
+            const hoursStr = loc.hours.toLowerCase();
+            let todayRange = "";
+            
+            if (hoursStr.includes("mo-so")) {
+                todayRange = hoursStr.split("mo-so:")[1] || hoursStr;
+            } else if (hoursStr.includes("sa-so") && (day === 0 || day === 6)) {
+                todayRange = hoursStr.split("sa-so:")[1] || hoursStr;
+            } else if (hoursStr.includes("mo-fr") && day >= 1 && day <= 5) {
+                todayRange = hoursStr.split("mo-fr:")[1]?.split(",")[0] || hoursStr;
+            } else if (hoursStr.includes("mo-sa") && day >= 1 && day <= 6) {
+                todayRange = hoursStr.split("mo-sa:")[1] || hoursStr;
+            }
+            
+            if (todayRange) {
+                const parts = todayRange.match(/(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+                if (parts) {
+                    const startMin = parseInt(parts[1]) * 60 + parseInt(parts[2]);
+                    const endMin = parseInt(parts[3]) * 60 + parseInt(parts[4]);
+                    if (currentTimeInMinutes >= startMin && currentTimeInMinutes < endMin) {
+                        return '<span class="status-badge status-open">Geöffnet</span>';
+                    }
+                }
+            }
+            return '<span class="status-badge status-closed">Geschlossen</span>';
+        }
+
+        if (loc.mainCat === 'events') {
+            const timeParts = loc.hours.match(/(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+            if (timeParts) {
+                const startMin = parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+                const endMin = parseInt(timeParts[3]) * 60 + parseInt(timeParts[4]);
+                
+                if (currentTimeInMinutes < startMin) {
+                    if (startMin - currentTimeInMinutes <= 60) {
+                        return '<span class="status-badge status-warning">Bald vor Ort</span>';
+                    }
+                } else if (currentTimeInMinutes >= startMin && currentTimeInMinutes < endMin) {
+                    if (endMin - currentTimeInMinutes <= 60) {
+                        return '<span class="status-badge status-warning">Bald nicht mehr vor Ort</span>';
+                    }
+                    return '<span class="status-badge status-open">Vor Ort</span>';
+                } else if (currentTimeInMinutes >= endMin) {
+                    return '<span class="status-badge status-closed">Nicht mehr vor Ort</span>';
+                }
+            }
+        }
+        return '';
+    }
+
     // 4. Function to Render Markers and List
     function renderLocations(mainFilter = 'all', subFilter = 'all') {
         markers.forEach(m => map.removeLayer(m));
@@ -529,6 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const popupHeader = isSammelstation ? 'Unterschriftenstelle + Einwurfbox' : loc.name;
             const postBoxFlag = (isSammelstation || isEvent) ? '📬📝 Postbox + Unterschriftenzettel vorhanden' : '';
             const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
+            const statusBadge = getStatusBadge(loc);
             
             let secondaryInfo = '';
             if (isSammelstation) {
@@ -541,11 +599,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const todayOptions = { day: 'numeric', month: 'numeric', year: 'numeric' };
             const todayLabel = new Date().toLocaleDateString('de-DE', todayOptions);
             const eventDateStr = isEvent ? `<p style="margin:0; font-weight:700;">${todayLabel}</p>` : '';
-            const eventTimeStr = isEvent ? `<p style="margin:0;">${loc.hours}</p>` : `<p>${loc.hours}</p>`;
+            const eventTimeStr = isEvent ? `<p style="margin:0;">${loc.hours} Uhr</p>` : `<p>${loc.hours}</p>`;
 
             marker.bindPopup(`
                 <div class="popup-content">
-                    <h3>${(isSammelstation) ? loc.name : popupHeader}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                        <h3 style="margin:0;">${(isSammelstation) ? loc.name : popupHeader}</h3>
+                        ${statusBadge}
+                    </div>
                     <div class="popup-info">
                         <p><strong>${loc.address}</strong></p>
                         ${isEvent ? eventDateStr + eventTimeStr : eventTimeStr}
@@ -568,10 +629,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 'events': 'Event'
             };
 
+            const cardEventInfo = isEvent ? `<p style="margin: 4px 0 0 0; font-size: 0.8rem;"><strong>${todayLabel}</strong> | ${loc.hours} Uhr</p>` : '';
+
             card.innerHTML = `
-                <h3>${loc.name}</h3>
-                <p>${loc.address}</p>
-                <div class="tag-row">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <h3 style="margin:0;">${loc.name}</h3>
+                    ${statusBadge}
+                </div>
+                <p style="margin: 4px 0;">${loc.address}</p>
+                ${cardEventInfo}
+                <div class="tag-row" style="margin-top: 8px;">
                     <span class="location-tag" style="background:${color}; color:${loc.mainCat === 'dauerhaft'?'#003333':'#FFFFFF'}">${catDisplay[loc.mainCat]}</span>
                     ${loc.subCat ? `<span class="location-tag">${loc.subCat}</span>` : ''}
                     ${(isSammelstation || isEvent) ? '<span>📬📝</span>' : ''}
