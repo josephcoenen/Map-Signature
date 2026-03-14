@@ -469,16 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
             hours: "Mo-So: 08:00 - 18:00",
             info: "coffee",
             subCat: "Cafés"
-        },
-        // Starter Events (Hardcoded as fallback if CSV fetch fails due to CORS)
-        {
-            name: "Testevent (BaumEntscheid Info)",
-            address: "Hohenzollernplatz, 80796 München",
-            lat: 48.1611099,
-            lng: 11.5674064,
-            mainCat: "events",
-            hours: "15:00 - 19:00",
-            info: "Event heute"
         }
     ];
 
