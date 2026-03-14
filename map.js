@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isEvent = loc.mainCat === 'events';
             
             const popupHeader = isSammelstation ? 'Unterschriftenstelle + Einwurfbox' : loc.name;
-            const postBoxFlag = isSammelstation ? '📬📝 Postbox + Unterschriftenzettel vorhanden' : '';
+            const postBoxFlag = (isSammelstation || isEvent) ? '📬📝 Postbox + Unterschriftenzettel vorhanden' : '';
             const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
             
             let secondaryInfo = '';
@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="tag-row">
                     <span class="location-tag" style="background:${color}; color:${loc.mainCat === 'dauerhaft'?'#003333':'#FFFFFF'}">${catDisplay[loc.mainCat]}</span>
                     ${loc.subCat ? `<span class="location-tag">${loc.subCat}</span>` : ''}
-                    ${isSammelstation ? '<span>📬📝</span>' : ''}
+                    ${(isSammelstation || isEvent) ? '<span>📬📝</span>' : ''}
                 </div>
             `;
 
